@@ -1,0 +1,38 @@
+html, body {
+	overflow: hidden;
+	margin: 0px;
+	padding: 0px;
+	padding-top: 10px;
+}
+
+div {
+	border-style: ridge;
+}
+
+#game {
+	border: 2px solid black;
+}
+
+#left {
+	width: 50%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+}
+
+#right {
+	width: 50%;
+	height: 100%;
+	position: absolute;
+	left: 50%;
+	top: 0;
+}
+
+textarea {
+     width: 100%;
+     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+     box-sizing: border-box;         /* Opera/IE 8+ */
+     height: 100%;
+     resize: none;
+}
