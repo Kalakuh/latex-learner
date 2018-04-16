@@ -16,7 +16,7 @@
 			var t = "";
 			for (i in s) {
 				c = s[i];
-				if (c == ' ' || c == "\n" || c == '\t') continue;
+				if (c == ' ' || c == '\n' || c == '\t' || c == ' ') continue;
 				t += c
 			}
 			return t
@@ -40,8 +40,6 @@
 		    var buffer = this.preview, preview = this.buffer;
 		    this.buffer = buffer; this.preview = preview;
 		    buffer.style.visibility = "hidden";
-		    //buffer.style.position = "absolute";
-		    //preview.style.position = "";
 		    preview.style.visibility = "";
 		  },
 		  
@@ -102,8 +100,6 @@
 		    var buffer = this.preview, preview = this.buffer;
 		    this.buffer = buffer; this.preview = preview;
 		    buffer.style.visibility = "hidden";
-		    //buffer.style.position = "absolute";
-		    //preview.style.position = "";
 		    preview.style.visibility = "";
 		  },
 		  
@@ -177,7 +173,8 @@
 		next.disabled = true;
 		var ctr = 0;
 		var pro = [
-			["$\\begin{aligned}\na + b\\cdot c &= 0\\\\\nb\\cdot c &= -a\\\\\n\n\\end{aligned}$", "$\\begin{aligned} a + b\\cdot c &= 0\\\\ b\\cdot c &= -a \\\\ b &= -\\frac{a}{c} \\end{aligned}$"],
+			["$\\begin{aligned}\na + b\\cdot c &= 0\\\\\nb\\cdot c &= -a\\\\\n\n\\end{aligned}$",
+			 "$\\begin{aligned} a + b\\cdot c &= 0\\\\ b\\cdot c &= -a \\\\ b &= -\\frac{a}{c} \\end{aligned}$"],
 			["$\\frac{a}{b}$", "$\\frac{a}{b}+\\frac{b}{c}$"],
 			["", "$\\sum_{k=1}^{100}\\sqrt{k}$"]
 		]
