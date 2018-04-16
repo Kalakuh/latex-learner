@@ -9,7 +9,6 @@
 		});
 		</script>
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-		<script src="game.js" defer></script>
 		<title>LaTeX-peli</title>
 
 		<script>
@@ -23,138 +22,108 @@
 			return t
 		}
 
-		var Preview = {
-			delay: 150,				// delay after keystroke before updating
-			preview: null,		 // filled in by Init below
-			buffer: null,			// filled in by Init below
-			timeout: null,		 // store setTimout id
-			mjRunning: false,	// true when MathJax is processing
-			mjPending: false,	// true when a typeset has been queued
-			oldText: null,		 // used to check if an update is needed
-			
+		var DynamicRenderer = {
+			rendered: null,
+			buffer: null,
+			running: false,
+			pending: false,
+			previous: null,
+
 			Init: function () {
-				this.preview = document.getElementById("up");
-				this.buffer = document.getElementById("MathBuffer");
-			},
-			
-			SwapBuffers: function () {
-				var buffer = this.preview, preview = this.buffer;
-				this.buffer = buffer; this.preview = preview;
-				buffer.style.visibility = "hidden";
-				preview.style.visibility = "";
+				this.rendered = document.getElementById("up");
+				this.buffer = document.getElementById("buffer1");
 			},
 			
 			Update: function () {
-				if (this.timeout) {clearTimeout(this.timeout)}
-				this.timeout = setTimeout(this.callback,this.delay);
-
+				this.Render();
 				a = document.getElementById("inputbox");
 				b = document.getElementById("target");
 				button = document.getElementById("next");
 				button.disabled = simplify(a.value) != simplify(b.value);
 			},
-			
-			CreatePreview: function () {
-				Preview.timeout = null;
-				if (this.mjPending) return;
-				var text = document.getElementById("inputbox").value;
-				if (text === this.oldtext) return;
-				if (this.mjRunning) {
-					this.mjPending = true;
-					MathJax.Hub.Queue(["CreatePreview",this]);
+
+			Render: function () {
+				if (this.pending) return;
+				var val = document.getElementById("inputbox").value;
+				if (val == this.previous) return;
+				if (this.running) {
+					this.pending = true;
+					MathJax.Hub.Queue(["Render", this]);
 				} else {
-					this.buffer.innerHTML = this.oldtext = text;
-					this.mjRunning = true;
-					MathJax.Hub.Queue(
-			["Typeset",MathJax.Hub,this.buffer],
-			["PreviewDone",this]
-					);
+					this.running = true;
+					this.buffer.innerHTML = this.previous = val;
+					MathJax.Hub.Queue(["Typeset",MathJax.Hub,this.buffer]);
+					MathJax.Hub.Queue(["Rendered",this]);
 				}
 			},
 			
-			PreviewDone: function () {
-				this.mjRunning = this.mjPending = false;
-				this.SwapBuffers();
+			Rendered: function () {
+				this.running = this.pending = false;
+				[this.buffer, this.rendered] = [this.rendered, this.buffer];
+				this.buffer.style.visibility = "hidden";
+				this.rendered.style.visibility = "";
 			}
 		};
-		
-		Preview.callback = MathJax.Callback(["CreatePreview",Preview]);
-		Preview.callback.autoReset = true;	// make sure it can run more than once
-		</script>
 
-		<script>
-		var Preview2 = {
-			delay: 150,				// delay after keystroke before updating
-			preview: null,		 // filled in by Init below
-			buffer: null,			// filled in by Init below
-			timeout: null,		 // store setTimout id
-			mjRunning: false,	// true when MathJax is processing
-			mjPending: false,	// true when a typeset has been queued
-			oldText: null,		 // used to check if an update is needed
-			
+		var DynamicRenderer2 = {
+			rendered: null,
+			buffer: null,
+			running: false,
+			pending: false,
+			previous: null,
+
 			Init: function () {
-				this.preview = document.getElementById("down");
-				this.buffer = document.getElementById("MathBuffer2");
-			},
-			
-			SwapBuffers: function () {
-				var buffer = this.preview, preview = this.buffer;
-				this.buffer = buffer; this.preview = preview;
-				buffer.style.visibility = "hidden";
-				preview.style.visibility = "";
+				this.rendered = document.getElementById("down");
+				this.buffer = document.getElementById("buffer2");
 			},
 			
 			Update: function () {
-				if (this.timeout) {clearTimeout(this.timeout)}
-				this.timeout = setTimeout(this.callback,this.delay);
+				this.Render();
 			},
-			
-			CreatePreview: function () {
-				Preview2.timeout = null;
-				if (this.mjPending) return;
-				var text = document.getElementById("target").value;
-				if (text === this.oldtext) return;
-				if (this.mjRunning) {
-					this.mjPending = true;
-					MathJax.Hub.Queue(["CreatePreview",this]);
+
+			Render: function () {
+				if (this.pending) return;
+				var val = document.getElementById("target").value;
+				if (val == this.previous) return;
+				if (this.running) {
+					this.pending = true;
+					MathJax.Hub.Queue(["Render", this]);
 				} else {
-					this.buffer.innerHTML = this.oldtext = text;
-					this.mjRunning = true;
-					MathJax.Hub.Queue(
-			["Typeset",MathJax.Hub,this.buffer],
-			["PreviewDone",this]
-					);
+					this.running = true;
+					this.buffer.innerHTML = this.previous = val;
+					MathJax.Hub.Queue(["Typeset",MathJax.Hub,this.buffer]);
+					MathJax.Hub.Queue(["Rendered",this]);
 				}
 			},
 			
-			PreviewDone: function () {
-				this.mjRunning = this.mjPending = false;
-				this.SwapBuffers();
+			Rendered: function () {
+				this.running = this.pending = false;
+				[this.buffer, this.rendered] = [this.rendered, this.buffer];
+				this.buffer.style.visibility = "hidden";
+				this.rendered.style.visibility = "";
 			}
 		};
 		
-		Preview2.callback = MathJax.Callback(["CreatePreview",Preview2]);
-		Preview2.callback.autoReset = true;	// make sure it can run more than once
 		</script>
 	</head>
 	<body>
 		<textarea style="visibility:hidden;" id="target">$a + b$</textarea>
 		<div id="left">
-			<textarea id="inputbox" onkeyup="Preview.Update()"></textarea>
+			<textarea id="inputbox" onkeyup="DynamicRenderer.Update()"></textarea>
 		</div>
 		<div id="right">
 			<span style="position: absolute; left: 5px; top: 2px; width: 100%">Esikatselu:</span>
 			<div id="up" style="position: absolute; left: 0; top: 20px; width: 100%; height: calc(50% - 20px)">
 				
 			</div>
-			<div id="MathBuffer" style="visibility:hidden; position: absolute; left: 0; top: 20px; width: 100%; height: calc(50% - 20px)">
+			<div id="buffer1" style="visibility:hidden; position: absolute; left: 0; top: 20px; width: 100%; height: calc(50% - 20px)">
 				
 			</div>
 			<span style="position: absolute; left: 5px; top: calc(50% + 7px); width: 100%">Tavoite:</span>
 			<div id="down" style="position: absolute; left: 0; top: calc(50% + 25px); width: 100%; height: calc(50% - 85px)">
 
 			</div>
-			<div id="MathBuffer2" style="visibility:hidden; position: absolute; left: 0; top: calc(50% + 25px); width: 100%; height: calc(50% - 85px)">
+			<div id="buffer2" style="visibility:hidden; position: absolute; left: 0; top: calc(50% + 25px); width: 100%; height: calc(50% - 85px)">
 				
 			</div>
 			<button id="next" style="background-color: #1FFF1F; position: absolute; left: 0; top: calc(100% - 60px); width: 100%; height: 60px">
@@ -166,10 +135,10 @@
 			</button>
 		</div>
 		<script>
-		Preview.Init();
-		Preview.Update();
-		Preview2.Init();
-		Preview2.Update();
+		DynamicRenderer.Init();
+		DynamicRenderer.Update();
+		DynamicRenderer2.Init();
+		DynamicRenderer2.Update();
 		next = document.getElementById("next");
 		next.disabled = true;
 		var ctr = 0;
@@ -186,8 +155,8 @@
 			target = document.getElementById("target");
 			target.value = pro[ctr][1];
 
-			Preview2.Update();
-			Preview.Update();
+			DynamicRenderer2.Update();
+			DynamicRenderer.Update();
 			ctr++;
 		}
 		</script>
